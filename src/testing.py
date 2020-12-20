@@ -1,10 +1,14 @@
 import speedtest
 import logging
+from datetime import datetime
+from os import path
+
 
 def testPing():
     logging.critical('Ping not implemented')
 
-def testInternetSpeed():
+
+def testInternetSpeed(csvName):
     speed = speedtest.Speedtest()
     logging.info('Testing download speed')
     downSpeed = speed.download()
@@ -25,3 +29,19 @@ def testInternetSpeed():
         logging.warning('Upload speed is below 2Mbs: %s Mbs', upSpeed/10)
     else:
         logging.info('Upload speed is: %s Mbs', upSpeed/10)
+
+    saveIntoCsv(csvName, upSpeed, downSpeed)
+
+
+def saveIntoCsv(csvName, upSpeed, downSpeed):
+    if path.exists(csvName):
+        with open(csvName, 'w+') as f:
+            f.write(datetime.now().strftime('%H:%M:%S %d.%m.%y') +
+                    ';' + str(upSpeed/10) + ';' + str(downSpeed/10) + '\n')
+            f.close()
+    else:
+        with open(csvName, 'a+') as f:
+            f.write('DateTime;UpSpeed;DownSpeed\n')
+            f.write(datetime.now().strftime('%H:%M:%S %d.%m.%y') +
+                    ';' + str(upSpeed/10) + ';' + str(downSpeed/10) + '\n')
+            f.close()

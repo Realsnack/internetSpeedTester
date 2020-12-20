@@ -1,4 +1,5 @@
 {
-    "LogName":"src/SpeedTest",
-    "SleepTime": "10"
+    "LogName":"log/SpeedTest",
+    "CsvName": "csv/SpeedCsv",
+    "SleepTime": "600"
 }

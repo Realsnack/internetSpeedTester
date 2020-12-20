@@ -133,5 +133,7 @@ dmypy.json
 .vs/
 .idea/
 
-# Log file
+# Log file and exports
 *.log
+log/
+*.csv
