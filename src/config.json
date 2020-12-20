@@ -1,4 +1,4 @@
 {
-    "LogName":"SpeedTest",
+    "LogName":"src/SpeedTest",
     "SleepTime": "60"
 }
