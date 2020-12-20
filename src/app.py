@@ -1,7 +1,9 @@
 import configparser
 import json
 import logging
+import time
 
+import testing
 
 def main():
     config = loadConfig("src/config.json")
@@ -12,10 +14,12 @@ def main():
 
     sleepTime = config["SleepTime"]
     logging.info('Sleeptime set to %s', sleepTime)
+    
+    # while 1:
+    #     testing.testInternetSpeed()
+    #     time.sleep(sleepTime)
 
-    while 1:
-        print('lol')
-
+    testing.testInternetSpeed()
 
 def loadConfig(configName):
     config = configparser.ConfigParser()
