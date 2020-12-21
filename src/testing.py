@@ -2,46 +2,55 @@ import speedtest
 import logging
 from datetime import datetime
 from os import path
+from elasticclient import ElasticClient
 
 
-def testPing():
-    logging.critical('Ping not implemented')
+class Testing:
+    def __init__(self, csvName, elasticHosts):
+        self.csvName = csvName
+        self.es = ElasticClient(elasticHosts)
 
+    def testPing(self):
+        logging.critical('Ping not implemented')
 
-def testInternetSpeed(csvName):
-    speed = speedtest.Speedtest()
-    logging.info('Testing download speed')
-    downSpeed = speed.download()
-    logging.debug('downSpeed ' + str(downSpeed))
-    logging.info('Testing upload speed')
-    upSpeed = speed.upload()
-    logging.debug('upSpeed ' + str(upSpeed))
+    def saveIntoCsv(self, upSpeed, downSpeed):
+        if path.exists(self.csvName):
+            with open(self.csvName, 'a+') as f:
+                f.write(datetime.now().strftime('%H:%M:%S %d.%m.%y') +
+                        ';' + str(upSpeed/10) + ';' + str(downSpeed/10) + '\n')
+                f.close()
+        else:
+            with open(self.csvName, 'w+') as f:
+                f.write('DateTime;UpSpeed;DownSpeed\n')
+                f.write(datetime.now().strftime('%H:%M:%S %d.%m.%y') +
+                        ';' + str(upSpeed/10) + ';' + str(downSpeed/10) + '\n')
+                f.close()
 
-    downSpeed = int(downSpeed/100000)
-    upSpeed = int(upSpeed/100000)
+    def testInternetSpeed(self):
+        speed = speedtest.Speedtest()
+        logging.info('Testing download speed')
+        downSpeed = speed.download()
+        logging.debug('downSpeed ' + str(downSpeed))
+        logging.info('Testing upload speed')
+        upSpeed = speed.upload()
+        logging.debug('upSpeed ' + str(upSpeed))
 
-    if downSpeed <= 100:
-        logging.warning('Download speed is below 10Mbs: %s Mbs', downSpeed/10)
-    else:
-        logging.info('Download speed is: %s Mbs', downSpeed/10)
+        downSpeed = int(downSpeed/100000)
+        upSpeed = int(upSpeed/100000)
 
-    if upSpeed <= 20:
-        logging.warning('Upload speed is below 2Mbs: %s Mbs', upSpeed/10)
-    else:
-        logging.info('Upload speed is: %s Mbs', upSpeed/10)
+        if downSpeed <= 100:
+            logging.warning(
+                'Download speed is below 10Mbs: %s Mbs', downSpeed/10)
+        else:
+            logging.info('Download speed is: %s Mbs', downSpeed/10)
 
-    saveIntoCsv(csvName, upSpeed, downSpeed)
+        if upSpeed <= 20:
+            logging.warning('Upload speed is below 2Mbs: %s Mbs', upSpeed/10)
+        else:
+            logging.info('Upload speed is: %s Mbs', upSpeed/10)
 
+        self.saveIntoCsv(upSpeed, downSpeed)
+        self.logSpeedToElastic(upSpeed/10, downSpeed/10)
 
-def saveIntoCsv(csvName, upSpeed, downSpeed):
-    if path.exists(csvName):
-        with open(csvName, 'w+') as f:
-            f.write(datetime.now().strftime('%H:%M:%S %d.%m.%y') +
-                    ';' + str(upSpeed/10) + ';' + str(downSpeed/10) + '\n')
-            f.close()
-    else:
-        with open(csvName, 'a+') as f:
-            f.write('DateTime;UpSpeed;DownSpeed\n')
-            f.write(datetime.now().strftime('%H:%M:%S %d.%m.%y') +
-                    ';' + str(upSpeed/10) + ';' + str(downSpeed/10) + '\n')
-            f.close()
+    def logSpeedToElastic(self, upSpeed, downSpeed):
+        self.es.index(datetime.now(), upSpeed, downSpeed)

@@ -5,7 +5,7 @@ import logging
 import time
 import os
 
-import testing
+from testing import Testing
 
 
 def main():
@@ -35,9 +35,11 @@ def main():
     sleepTime = int(config["SleepTime"])
     logging.info("Sleeptime set to %s", sleepTime)
 
+    test = Testing(csvName, config['Elasticsearch']['Hosts'])
+
     try:
         while 1:
-            runTest(sleepTime, csvName)
+            runTest(sleepTime, test)
     except:
         logging.exception('An error occured')
 
@@ -51,11 +53,11 @@ def loadConfig(configName):
     return config
 
 
-def runTest(sleepTime, csvName):
+def runTest(sleepTime, test):
     logging.info("Testing Ping")
-    testing.testPing()
+    test.testPing()
     logging.info("Testing Speed")
-    testing.testInternetSpeed(csvName)
+    test.testInternetSpeed()
     logging.info("Sleeping for %ss", sleepTime)
     time.sleep(sleepTime)
     logging.info("Sleeping done")
