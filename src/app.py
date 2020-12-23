@@ -28,7 +28,7 @@ def main():
     else:
         print("Successfully created the directory %s " % 'csv')
 
-    logging.basicConfig(filename=logName, filemode="w+",
+    logging.basicConfig(filename=logName, filemode="a+",
                         format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
     logging.info("Program started, config loaded")
 

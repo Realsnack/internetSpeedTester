@@ -53,4 +53,6 @@ class Testing:
         self.logSpeedToElastic(upSpeed/10, downSpeed/10)
 
     def logSpeedToElastic(self, upSpeed, downSpeed):
-        self.es.index(datetime.now(), upSpeed, downSpeed)
+        timestamp = datetime.now()
+        logging.debug('Timestamp: %s', timestamp)
+        self.es.index(timestamp, upSpeed, downSpeed)
